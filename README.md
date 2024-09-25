@@ -9,7 +9,7 @@ find /project/4180000.24/Previn/PND70_cut/ -type f -name "*.mp4" -exec basename 
 # For automatic merging
 #!/bin/bash
 cd <set working directory>
-# Iterate over each .mp4 file in the folder
+`# Iterate over each .mp4 file in the folder`
 for file in *.mp4; do
     # Check if the file name ends with P1 or P2
     if [[ "$file" =~ ^(.*)(P[12])\.mp4$ ]]; then
@@ -55,14 +55,14 @@ done
 # For automatic trimming
 #!/bin/bash
 
-# Path to the CSV file
+`# Path to the CSV file`
 csv_file="/project/4180000.24/Previn/trimsheet_PND30.csv"
 
-# Path to the folder containing the .mp4 files
+`# Path to the folder containing the .mp4 files`
 video_folder="/project/4180000.24/Previn/PND30_cut/"
 out
 
-# Read the CSV file and process each row
+`# Read the CSV file and process each row`
 awk -F ',' 'NR > 1 { print $1,$2,$3 }' "$csv_file" | while read -r start end video_name; do
     echo "Processing video: "$video_name
     echo "Start time: "$start
