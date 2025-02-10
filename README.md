@@ -120,24 +120,24 @@ done
 # For quantifying social interaction
 #!/usr/bin/env python3
 
-#`Only focus on the x and y coordinates of the nose and tailabse
+#`Only focus on the x and y coordinates of the nose and tailbase`
 #`Need to know the number of frames where they meet the condition that they are not further apart than 5 pixels
 
-#`Import libraries
+#`Import libraries`
 import pandas as pd
 import numpy as np
 
-#`Load data
+#`Load data`
 df = pd.read_csv("/Users/macair/Desktop/finalising internship/Coordinates.csv", header=None)
 
-#`To easily reach to the data, create a hierarchical name by combining the first few rows
+#`To easily reach to the data, create a hierarchical name by combining the first few rows`
 headers= df.iloc[:4].apply(lambda x: '_'.join(x), axis=0)
 data = df.iloc[4:] # to extract the numeric data
 data.columns = headers
 data.reset_index(drop=True, inplace=True)
 
-#`Filter the original DF (Coordinates.csv) to filter out all the columns you don't need
-#`Only take the nose and tailbase columns
+#`Filter the original DF (Coordinates.csv) to filter out all the columns you don't need`
+#`Only take the nose and tailbase columns`
 selected_columns = [
     "DLC_resnet50_test123May13shuffle5_100000_individual1_nose_x", 
     "DLC_resnet50_test123May13shuffle5_100000_individual1_nose_y",
@@ -151,45 +151,45 @@ filtered_df= data[selected_columns]
 
 for col in selected_columns:
     filtered_df[col] = pd.to_numeric(filtered_df[col], errors='coerce') 
-#`pd.to.numeric is to ensure the values are numeric
-#`if they are not converted to numeric values, error='coerce' will return NaNI
+#`pd.to.numeric is to ensure the values are numeric`
+#`if they are not converted to numeric values, error='coerce' will return NaNI`
 
-#`To calculate the distance, use the following formula (Pythagorean theorem):
-#`d=√((x_2-x_1)²+(y_2-y_1)²)
+#`To calculate the distance, use the following formula (Pythagorean theorem):`
+#`d=√((x_2-x_1)²+(y_2-y_1)²)`
 
-#`Add 2 columns where for every frame (for every row containing data) you calculate the difference in x and y
-#`Do this for individual 1 sniffing individual 2's butt
+#`Add 2 columns where for every frame (for every row containing data) you calculate the difference in x and y`
+#`Do this for individual 1 sniffing individual 2's butt`
 filtered_df['Δx1'] = filtered_df["DLC_resnet50_test123May13shuffle5_100000_individual1_nose_x"] - filtered_df["DLC_resnet50_test123May13shuffle5_100000_individual2_tailbase_x"]
 filtered_df['Δy1'] = filtered_df["DLC_resnet50_test123May13shuffle5_100000_individual1_nose_y"] - filtered_df["DLC_resnet50_test123May13shuffle5_100000_individual2_tailbase_y"]
-#`Also for invidual 2 sniffing individual 1's butt
+#`Also for invidual 2 sniffing individual 1's butt`
 filtered_df['Δx2'] = filtered_df["DLC_resnet50_test123May13shuffle5_100000_individual2_nose_x"] - filtered_df["DLC_resnet50_test123May13shuffle5_100000_individual1_tailbase_x"]
 filtered_df['Δy2'] = filtered_df["DLC_resnet50_test123May13shuffle5_100000_individual2_nose_y"] - filtered_df["DLC_resnet50_test123May13shuffle5_100000_individual1_tailbase_y"]
 
 #`Using these columns calculate the absolute distance in pixels (square root)
-#`Do this for ind1 sniffing indv2
+#`Do this for ind1 sniffing indv2`
 filtered_df['absolute_distance1'] = np.sqrt((filtered_df['Δx1']**2) + (filtered_df['Δy1']**2))
-#`Also for ind2 sniffinf indv1
+#`Also for ind2 sniffinf indv1`
 filtered_df['absolute_distance2'] = np.sqrt((filtered_df['Δx2']**2) + (filtered_df['Δy2']**2))
 
-#`In a fourth column, apply a boolean func that says whether the absolute distance is < threshold via returning True or False
-#`This gives the exact number of frames where the distance between nose and tailbase was < threshold, for both cases: ind1 sniffing ind2, ind2 sniffing indv1
-#`Interaction threshold in pixels, conversion: 1 pixel = 0.1 cm & to be interacting < 2cm
+#`In a fourth column, apply a boolean func that says whether the absolute distance is < threshold via returning True or False`
+#`This gives the exact number of frames where the distance between nose and tailbase was < threshold, for both cases: ind1 sniffing ind2, ind2 sniffing indv1`
+#`Interaction threshold in pixels, conversion: 1 pixel = 0.1 cm & to be interacting < 2cm`
 interaction_threshold = 20  
 filtered_df['interaction1'] = filtered_df['absolute_distance1'] <= interaction_threshold
 filtered_df['interaction2'] = filtered_df['absolute_distance2'] <= interaction_threshold
 
-#`Find the number of frames where interaction occurs
+#`Find the number of frames where interaction occurs`
 interaction_frames1 = filtered_df['interaction1'].sum()
 interaction_frames2 = filtered_df['interaction2'].sum()
 
-#`Divide by 25 to get the interaction time in seconds (25 frames per second)
+#`Divide by 25 to get the interaction time in seconds (25 frames per second)`
 interaction_time1 = interaction_frames1/25
 interaction_time2 = interaction_frames2/25
 
-#`Add the two interaction times to find the total interaction time
+#`Add the two interaction times to find the total interaction time`
 total_interaction_time = interaction_time1 + interaction_time2
 
 print("Interaction Time (ind1 sniffing ind2:", interaction_time1, "seconds")
 print("Interaction Time (ind2 sniffing ind1:", interaction_time2, "seconds")
 print("Total Interaction Time:", total_interaction_time, "seconds")
-#`Getting the individual interaction times also help differentiate between the genotypes of the mice
+#`Getting the individual interaction times also help differentiate between the genotypes of the mice`
