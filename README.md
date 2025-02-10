@@ -1,5 +1,5 @@
 # Scripts
-# To extract file names
+# For extracting file names
 #!/bin/bash 
 
 find /project/4180000.24/Previn/PND30_cut/ -type f -name "*.mp4" -exec basename {} \; | sed 's/\.mp4$//' > /project/4180000.24/Previn/PND30files.csv 
